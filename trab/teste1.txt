@@ -1,0 +1,22 @@
+/***** insercao *******/
+procedimento jOk(j: inteiro , aux: inteiro , v: inteiro[]): inteiro
+inicio
+    se j > 0 entao
+            se aux < v[j - 1] entao retorne 1;
+    fimse; fimse; retorne 0; 
+    fim 
+procedimento jOk(j: inteiro , aux: inteiro, v: inteiro[]): inteiro
+inicio
+    variavel i, j, custo, aux: inteiro;
+    escreva(v[i], " ");
+    custo = 0;
+    para i=1 ate tamanho( v ) - 1 faca
+        aux = v[i]; j = i;
+    enquanto jOk (j, aux,v) == 1 faca
+        custo = custo + 1;
+        v[j] = v[j - 1]; j=j-1;
+        fimenquanto;
+        v[j] =aux;
+    fimpara;
+    retorne custo;
+fim

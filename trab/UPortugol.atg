@@ -1,0 +1,47 @@
+COMPILER UPortugol
+
+CHARACTERS
+    letra = 'A'..'Z' + 'a'..'z'.
+    digito = '0'..'9'.
+    linhaComChar = ANY - '\r' - '\n'.
+    qualquerCharMenosAspas = linhaComChar - '\"'.
+
+TOKENS
+    ident = letra { letra  | digito }.
+    numero = ['-'] digito {digito}.
+    strConst = '"' { qualquerCharMenosAspas | "\\\""} '"'.
+
+COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "//" TO '\n' 
+
+IGNORE 
+    '\n' + '\r' + '\t'
+
+PRODUCTIONS
+
+    UPortugol = { Bloco }.
+    Bloco = DeclProc { Instrucao } .
+    DeclProc = "procedimento" ident "(" {Parametros} ")" 
+                [":" Tipo ] "inicio" {Instrucao} "fim".
+    Tipo = "inteiro".
+    Instrucao = DeclVar |
+                ChamaProc | Condicao "fimse;"  | Retorno ";" | Escreva .
+    Parametros =  ident ":" "inteiro" [ "[]" ][","]. 
+    DeclVar = ComAtribuicao ";" | SemAtribuicao ";" .
+    SemAtribuicao = "variavel" Expr  [(":" |",")] ["inteiro"] {Expr  [(":" |",")] [Tipo]}. 
+    ComAtribuicao = ident "=" Expr .
+    ChamaProc = Designator ParamsDeclarados ";".
+    ParamsDeclarados  = "(" { ident [ Expr ] [ ","] } ")".
+    ParamsPassados = "(" [ Expr {"," Expr}] ")".
+    Condicao = "se" Expr OpRelacional Expr "entao" Instrucao  ["senao" Instrucao].
+    OpRelacional = "<" | ">" | ">=" | "<=" | "!=".
+    Designator = ident "(" Expr ")".
+    Expr = ["-"] Termo { ( "+" Termo | "-" Termo ) } .
+    Termo = Fator { ( "*" Fator | "/" Fator ) } .
+    Fator =  ident ["[" Expr "]"] | numero | "(" Expr ")" | "abs" "(" Expr ")" .
+    FatorVetor =  "novo" ident ("[" Expr "]" | Inicializ).
+    Inicializ = "{" { numero } "}".
+   
+    Retorno = "retorne" [Expr] .
+    Escreva = "escreva" "(" [Expr] [strConst] [Expr] {  [ Expr ] [strConst] "," [strConst]  Expr }  ");".
+END UPortugol.

@@ -1,0 +1,29 @@
+/*
+comparacao de metodos de ordenacao, Marco, 2014
+*/
+
+algoritmo ComparacaoDeAlgoritmosOrdenacao
+
+constante TAM = 10;
+
+procedimento imprime(v: inteiro[])
+inicio
+    variavel i: inteiro;
+    para i = 0 ate tamanho(v) - 1 faca
+    escreva(v[i], " ");
+    fimpara;
+fim
+procedimento copia(v1: inteiro[], v2: inteiro[])
+inicio
+    variavel i: inteiro;
+    para i = 0 ate (tamanho(v1) - 1) faca
+    v1[i] = v2[i];
+    fimpara;
+fim
+procedimento troque(v: inteiro[], i: inteiro, j: inteiro)
+inicio
+    variavel tmp: inteiro;
+    tmp = v[i];
+    v[i] = v[j];
+    v[j] = tmp;
+fim
