@@ -5,7 +5,10 @@ import java.util.ArrayList;
  
 COMPILER UPortugol
 /* Métodos necessários */
- 
+
+String beginDocument (String s) {
+    return "<html><body>" + s + "</body></html>";
+} 
 
 String ident(String s, int margin) {
     return "<div style='margin-left:" + margin +"px'>" + s + "</div>";
@@ -70,7 +73,7 @@ PRODUCTIONS
     = DeclProc <out res>       (. saidaFormatada = saidaFormatada + res;  .)// v é o valor da expressão/saída O v vem do Bloco
     { 
         Instrucao <out res>    (. saidaFormatada = saidaFormatada + res; .)
-    }                          (. System.out.println(saidaFormatada); appendFile(saidaFormatada); .)
+    }                          (. System.out.println(saidaFormatada); appendFile(beginDocument(saidaFormatada)); .)
     .                           
     
     DeclProc<out String res>                  (. res = ""; String v1=""; String v2 = "";String t1 = ""; .)
