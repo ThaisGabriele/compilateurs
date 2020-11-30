@@ -36,6 +36,10 @@ public class Parser {
     return "<div style='margin-left:" + margin +"px'>" + s + "</div>";
 }
 
+String beginDocument (String s) {
+    return "<html><body>" + s + "</body></html>";
+}
+
 String toBlueBold(String s) { 
     return "</span><br/><span style='color: #0000ff;'><strong>"+ s + "</strong></span>";    
 }
@@ -136,7 +140,7 @@ void appendFile(String saidaFormatada) {
 			res = Instrucao();
 			saidaFormatada = saidaFormatada + res; 
 		}
-		System.out.println(saidaFormatada); appendFile(saidaFormatada); 
+		System.out.println(saidaFormatada); appendFile(beginDocument(saidaFormatada)); 
 	}
 
 	String  DeclProc() {

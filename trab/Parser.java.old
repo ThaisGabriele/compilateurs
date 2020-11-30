@@ -159,7 +159,7 @@ void appendFile(String saidaFormatada) {
 			res = res + t1; 
 		}
 		Expect(4);
-		res = res + toBlackBold(t.val); 
+		res = res + toBlackBold(ident(t.val,20)); 
 		while (la.kind == 1 || la.kind == 6) {
 			v2 = Instrucao();
 			res = res +  ident(v2,40) ; 
