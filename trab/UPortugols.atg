@@ -7,7 +7,7 @@ COMPILER UPortugol
 /* Métodos para formatação */
 
 String beginDocument (String s) {
-    return "<html><body>" + s + "</body></html>";
+    return "<html style='font: 18px Helvetica sans-serif><body>" + s + "</body></html>";
 } 
 
 String ident(String s, int margin) {
@@ -226,10 +226,10 @@ PRODUCTIONS
     = ["-"]                          (. res = res + t.val;.)
     Termo <out v1>                   (. res = res + v1; .)             
         {                       
-            ( "+"                (. res = res + t.val; .) 
-              Termo  <out v2>    (. res = res + v2; .)          
-            | "-"                (. res = res + t.val; .) 
-              Termo  <out v2>    (. res = res + v2; .)  
+            ( "+"                    (. res = res + t.val; .)
+            Termo  <out v2>          (. res = res + v2; .)          
+            | "-"                    (. res = res + t.val; .)
+            Termo  <out v2>          (. res = res + v2; .)  
             )
         } 
     .
@@ -237,10 +237,10 @@ PRODUCTIONS
     Termo <out String res>        (. res = "";  String v1="";  String v2="";.)
     = Fator <out v1>              (. res = res + v1; .)               
     { 
-        ( "*"                    (. res = res + t.val; .) 
-         Fator <out v2>          (. res = res + v2; .)  
-        | "/"                    (. res = res + t.val; .) 
-         Fator  <out v2>         (. res = res + v2; .)  
+        ( "*"                     (. res = res + t.val; .) 
+        Fator <out v2>            (. res = res + v2; .)  
+        | "/"                     (. res = res + t.val; .) 
+        Fator  <out v2>           (. res = res + v2; .)  
         ) 
     } .
 
@@ -328,3 +328,4 @@ END UPortugol.
     Retorno = "retorne" [Expr] .
     Escreva = "escreva" "(" [Expr] [strConst] [Expr] {  [ Expr ] [strConst] "," [strConst]  Expr }  ");". *
     */
+
