@@ -29,6 +29,12 @@ public class Parser {
 	public static final int _senao = 18;
 	public static final int _entao = 19;
 	public static final int _fimse = 20;
+	public static final int _maior = 21;
+	public static final int _menor = 22;
+	public static final int _maiorIgual = 23;
+	public static final int _menorIgual = 24;
+	public static final int _diferente = 25;
+	public static final int _resto = 26;
 	public static final int maxT = 46;
 
 	static final boolean T = true;
@@ -138,7 +144,7 @@ void appendFile(String saidaFormatada) {
 	
 	void UPortugol() {
 		Bloco();
-		while (la.kind == 21) {
+		while (la.kind == 27) {
 			Bloco();
 		}
 	}
@@ -157,17 +163,17 @@ void appendFile(String saidaFormatada) {
 	String  DeclProc() {
 		String  res;
 		res = ""; String v1=""; String v2 = "";String t1 = ""; 
-		Expect(21);
+		Expect(27);
 		res = toBlueBold(t.val); 
 		Expect(1);
 		res = res + " " + toBlackBold(t.val); 
-		Expect(22);
+		Expect(28);
 		res = res + t.val; 
 		v1  = Parametros();
 		res = res + v1; 
-		Expect(23);
+		Expect(29);
 		res = res + t.val; 
-		if (la.kind == 24) {
+		if (la.kind == 30) {
 			Get();
 			res = res +  t.val; 
 			t1  = Tipo();
@@ -193,12 +199,12 @@ void appendFile(String saidaFormatada) {
 		} else if (la.kind == 17) {
 			v3 = Condicao();
 			res = res + v3; 
-			Expect(28);
+			Expect(34);
 			res = res + toBlackBold(ident(t.val,20)); 
 		} else if (la.kind == 13) {
 			v4 = Retorno();
 			res = res + v4; 
-			Expect(29);
+			Expect(35);
 		} else SynErr(47);
 		return res;
 	}
@@ -209,12 +215,12 @@ void appendFile(String saidaFormatada) {
 		while (la.kind == 1) {
 			Get();
 			res = res + " " + toBlackBold(t.val); 
-			Expect(24);
+			Expect(30);
 			res = res + " " + t.val; 
-			Expect(25);
+			Expect(31);
 			res = res + toRedBold(t.val); 
-			if (la.kind == 26 || la.kind == 27) {
-				if (la.kind == 26) {
+			if (la.kind == 32 || la.kind == 33) {
+				if (la.kind == 32) {
 					Get();
 				} else {
 					Get();
@@ -228,7 +234,7 @@ void appendFile(String saidaFormatada) {
 	String  Tipo() {
 		String  res;
 		res = ""; 
-		Expect(25);
+		Expect(31);
 		res = res + " " + toBlackBold(t.val); 
 		return res;
 	}
@@ -239,12 +245,12 @@ void appendFile(String saidaFormatada) {
 		if (la.kind == 1) {
 			v1 = ComAtribuicao();
 			res = res + v1; 
-			Expect(29);
+			Expect(35);
 			res = res + t.val;
 		} else if (la.kind == 6) {
 			v2 = SemAtribuicao();
 			res = res + v2;
-			Expect(29);
+			Expect(35);
 			res = res + t.val;
 		} else SynErr(48);
 		return res;
@@ -252,24 +258,47 @@ void appendFile(String saidaFormatada) {
 
 	String  Condicao() {
 		String  res;
-		res = "";  String v1="";  String op=""; String v12=""; String v2="";
+		res = " ";  String v1=" ";  String op=" "; String v12=" "; String v2=" ";
 		Expect(17);
-		res = res + toBlackBold(t.val); 
 		v1 = Expr();
-		res = res + " " + v1; 
-		op = OpRelacional();
-		res = res + op; 
+		res =  " " + toBlackBold(" " + v1 + " "); 
+		switch (la.kind) {
+		case 21: {
+			Get();
+			break;
+		}
+		case 22: {
+			Get();
+			break;
+		}
+		case 24: {
+			Get();
+			break;
+		}
+		case 23: {
+			Get();
+			break;
+		}
+		case 25: {
+			Get();
+			break;
+		}
+		case 26: {
+			Get();
+			break;
+		}
+		default: SynErr(49); break;
+		}
 		v12 = Expr();
-		res = res + " " + v12; 
+		res = res + " " + v12 + " " ; 
 		Expect(19);
 		res = res + toBlackBold(t.val); 
 		v2 = Instrucao();
-		res = res + v2; 
+		res = res + ident(v2,40); 
 		if (la.kind == 18) {
 			Get();
-			res = res + toBlackBold(t.val); 
 			v2 = Instrucao();
-			res = res + v2; 
+			res = res + ident(v2,40); 
 		}
 		return res;
 	}
@@ -312,11 +341,11 @@ void appendFile(String saidaFormatada) {
 		res = "";  String v1=""; 
 		Expect(1);
 		res = res + " "+ toBlackBold(t.val);
-		Expect(30);
+		Expect(36);
 		res = res + t.val;
 		v1 = Expr();
 		res = res + v1; 
-		Expect(29);
+		Expect(35);
 		res = res + t.val;
 		return res;
 	}
@@ -328,13 +357,13 @@ void appendFile(String saidaFormatada) {
 		res = res + toBlackBold(t.val); 
 		v1 = Expr();
 		res = res + v1; 
-		if (la.kind == 26) {
+		if (la.kind == 32) {
 			Get();
 		}
 		res = res + t.val;
-		if (la.kind == 24) {
+		if (la.kind == 30) {
 			Get();
-			Expect(25);
+			Expect(31);
 		}
 		res = res + t.val;
 		while (la.kind == 6) {
@@ -342,54 +371,15 @@ void appendFile(String saidaFormatada) {
 			res = res + toBlackBold(t.val); 
 			v1 = Expr();
 			res = res + v1; 
-			if (la.kind == 26) {
+			if (la.kind == 32) {
 				Get();
 			}
 			res = res + t.val;
-			if (la.kind == 24) {
+			if (la.kind == 30) {
 				Get();
-				Expect(25);
+				Expect(31);
 			}
 			res = res + t.val;
-		}
-		return res;
-	}
-
-	String  OpRelacional() {
-		String  res;
-		res = ""; 
-		switch (la.kind) {
-		case 31: {
-			Get();
-			res = res + t.val;
-			break;
-		}
-		case 32: {
-			Get();
-			res = res + t.val;
-			break;
-		}
-		case 33: {
-			Get();
-			res = res + t.val;
-			break;
-		}
-		case 34: {
-			Get();
-			res = res + t.val;
-			break;
-		}
-		case 35: {
-			Get();
-			res = res + t.val;
-			break;
-		}
-		case 36: {
-			Get();
-			res = res + t.val;
-			break;
-		}
-		default: SynErr(49); break;
 		}
 		return res;
 	}
@@ -397,21 +387,18 @@ void appendFile(String saidaFormatada) {
 	String  FatorVetor() {
 		String  res;
 		res = "";  String v1=""; String v2=""; 
-		if (la.kind == 1) {
+		if (la.kind == 37) {
 			Get();
-			res = res + t.val; 
-			Expect(37);
-			res = res + t.val; 
 			v1 = Expr();
-			res = res + v1; 
+			res =  " " + toBlackBold(" " + v1); 
 			Expect(38);
-			res = res + t.val; 
+			res = res + t.val ; 
 		} else if (la.kind == 15) {
 			Get();
 			res = res + toBlackBold(t.val); 
 			Expect(1);
 			res = res + toBlackBold(t.val); 
-			if (StartOf(2)) {
+			if (la.kind == 1 || la.kind == 2 || la.kind == 39) {
 				v1 = Expr();
 				res = res + v1; 
 			} else if (la.kind == 43) {
@@ -430,7 +417,7 @@ void appendFile(String saidaFormatada) {
 		while (la.kind == 2) {
 			Get();
 			res = res + toBlackBold(t.val); 
-			if (la.kind == 26) {
+			if (la.kind == 32) {
 				Get();
 			}
 			res = res + t.val; 
@@ -465,12 +452,13 @@ void appendFile(String saidaFormatada) {
 		if (la.kind == 1) {
 			Get();
 			res = res + toBlackBold(t.val); 
+			if (la.kind == 15 || la.kind == 37) {
+				v1 = FatorVetor();
+				res = res + v1; 
+			}
 		} else if (la.kind == 2) {
 			Get();
 			res = res + toBlackBold(t.val); 
-		} else if (la.kind == 1 || la.kind == 15) {
-			v2 = FatorVetor();
-			res = res + v2; 
 		} else SynErr(52);
 		return res;
 	}
@@ -480,15 +468,15 @@ void appendFile(String saidaFormatada) {
 		res = ""; String v1=""; 
 		Expect(45);
 		res = res + t.val; 
-		Expect(22);
+		Expect(28);
 		res = res + t.val; 
 		if (la.kind == 2) {
 			Get();
-		} else if (StartOf(2)) {
+		} else if (la.kind == 1 || la.kind == 2 || la.kind == 39) {
 			v1 = Expr();
 		} else SynErr(53);
 		res = res + v1; 
-		Expect(23);
+		Expect(29);
 		res = res + t.val; 
 		return res;
 	}
@@ -506,8 +494,7 @@ void appendFile(String saidaFormatada) {
 
 	private static final boolean[][] set = {
 		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
-		{x,T,x,x, x,x,T,x, x,x,x,x, x,T,x,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
-		{x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,x, x,x,x,x}
+		{x,T,x,x, x,x,T,x, x,x,x,x, x,T,x,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x}
 
 	};
 } // end Parser
@@ -553,22 +540,22 @@ class Errors {
 			case 18: s = "senao expected"; break;
 			case 19: s = "entao expected"; break;
 			case 20: s = "fimse expected"; break;
-			case 21: s = "\"procedimento\" expected"; break;
-			case 22: s = "\"(\" expected"; break;
-			case 23: s = "\")\" expected"; break;
-			case 24: s = "\":\" expected"; break;
-			case 25: s = "\"inteiro\" expected"; break;
-			case 26: s = "\",\" expected"; break;
-			case 27: s = "\"[]\" expected"; break;
-			case 28: s = "\"fimse;\" expected"; break;
-			case 29: s = "\";\" expected"; break;
-			case 30: s = "\"=\" expected"; break;
-			case 31: s = "\"<\" expected"; break;
-			case 32: s = "\">\" expected"; break;
-			case 33: s = "\">=\" expected"; break;
-			case 34: s = "\"<=\" expected"; break;
-			case 35: s = "\"!=\" expected"; break;
-			case 36: s = "\"%\" expected"; break;
+			case 21: s = "maior expected"; break;
+			case 22: s = "menor expected"; break;
+			case 23: s = "maiorIgual expected"; break;
+			case 24: s = "menorIgual expected"; break;
+			case 25: s = "diferente expected"; break;
+			case 26: s = "resto expected"; break;
+			case 27: s = "\"procedimento\" expected"; break;
+			case 28: s = "\"(\" expected"; break;
+			case 29: s = "\")\" expected"; break;
+			case 30: s = "\":\" expected"; break;
+			case 31: s = "\"inteiro\" expected"; break;
+			case 32: s = "\",\" expected"; break;
+			case 33: s = "\"[]\" expected"; break;
+			case 34: s = "\"fimse;\" expected"; break;
+			case 35: s = "\";\" expected"; break;
+			case 36: s = "\"=\" expected"; break;
 			case 37: s = "\"[\" expected"; break;
 			case 38: s = "\"]\" expected"; break;
 			case 39: s = "\"-\" expected"; break;
@@ -581,7 +568,7 @@ class Errors {
 			case 46: s = "??? expected"; break;
 			case 47: s = "invalid Instrucao"; break;
 			case 48: s = "invalid DeclVar"; break;
-			case 49: s = "invalid OpRelacional"; break;
+			case 49: s = "invalid Condicao"; break;
 			case 50: s = "invalid FatorVetor"; break;
 			case 51: s = "invalid FatorVetor"; break;
 			case 52: s = "invalid Fator"; break;

@@ -2,7 +2,7 @@
 procedimento jOk(j: inteiro , aux: inteiro , v: inteiro[]): inteiro
 inicio
     se j > 0 entao
-            se aux < v entao retorne 1;
+            se aux < v[j - 1] entao retorne 1;
     fimse; fimse; retorne 0; 
     fim 
 procedimento jOk(j: inteiro , aux: inteiro, v: inteiro[]): inteiro
