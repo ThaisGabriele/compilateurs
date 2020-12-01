@@ -8,6 +8,7 @@ inicio
 procedimento jOk(j: inteiro , aux: inteiro, v: inteiro[]): inteiro
 inicio
     variavel i, j, custo, aux: inteiro;
+    escreva("klgkf");
     escreva(v[i], " ");
     custo = 0;
     para i=1 ate tamanho( v ) - 1 faca

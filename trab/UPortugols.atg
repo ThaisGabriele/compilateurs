@@ -1,7 +1,6 @@
 import java.io.*;
 import java.io.File; 
 import java.io.IOException;
-import java.util.ArrayList;
  
 COMPILER UPortugol
 
@@ -97,7 +96,7 @@ PRODUCTIONS
     = DeclProc <out res>       (. saidaFormatada = saidaFormatada + res;  .)// v é o valor da expressão/saída O v vem do Bloco
     { 
         Instrucao <out res>    (. saidaFormatada = saidaFormatada + res; .)
-    }                          (. System.out.println(saidaFormatada); appendFile(beginDocument(saidaFormatada)); .)
+    }                          (. appendFile(beginDocument(saidaFormatada)); .)
     .                           
     
     /* DeclProc = "procedimento" ident "(" {Parametros} ")" [":" Tipo ] "inicio" {Instrucao} "fim". */
@@ -131,50 +130,52 @@ PRODUCTIONS
     }   
     . 
     /* Instrucao = DeclVar | Condicao | Retorno | Escreva | Leia | Repeticao */
-    Instrucao <out String res>       (.res = "";  String v1=""; String v2 = ""; String v3 = "";  String v4 = "";  .)
+    Instrucao <out String res>       (.res = "";  String v1=""; String v2 = ""; String v3 = "";  String v4 = ""; String v5 = "";  .)
     = DeclVar <out v1>               (. res = res + v1; .) 
    //   | ChamaProc  <out v2>          (. res = res + v2; .) 
-      | Condicao  <out v3>           (. res = res + v3; .) 
-            "fimse;"                 (. res = res + toBlackBold(ident(t.val,20)); .)  
+      | Condicao  <out v3>         //  (. res = res + v3; .) 
+            "fimse;"                 (. res = res + toBlackBold(ident(v3,20)); .)  
       | Retorno   <out v4>           (. res = res + v4; .)         
-      ";"
+      
+      | Escreva  <out v5>            (. res = res + v5; .) 
+            
     .
 
     Retorno <out String res>        (.res = "";  String v1=""; .)
     = retorne                       (. res = res + toBlackBold(ident(t.val,20)); .) 
      Expr  <out v1>                 (. res = res + v1; .) 
+     ";"                            (. res = res + t.val;.) 
     .   
 
     DeclVar  <out String res>        (. res = ""; String v1=""; String v2 = ""; .)           
     = ComAtribuicao <out v1>         (. res = res + v1; .)
     ";"                              (. res = res + t.val;.)    
-    | SemAtribuicao <out v2>         (. res = res + v2;.)
+    | 
+    variavel SemAtribuicao <out v2>  (. res = res + " " + v2;.)
+    
     ";"                              (. res = res + t.val;.)
+    
     .
     
     // variavel j, min, minj: inteiro;  variavel tmp: inteiro;
-    SemAtribuicao <out String res>  (. res = ""; String v1=""; .) 
-    =  variavel                     (. res = res + toBlackBold(t.val); .)
-      Expr <out v1>                 (. res = res + v1; .)
-      [(",")]                       (. res = res + t.val;.) 
-      [(":" "inteiro")]             (. res = res + t.val;.) 
-       {
-        variavel                    (. res = res + toBlackBold(t.val); .)
-        Expr <out v1>               (. res = res + v1; .)
-        [(",")]                     (. res = res + t.val;.) 
-        [(":" "inteiro")]           (. res = res + t.val;.) 
-       }
+    SemAtribuicao <out String res>  (.  res = ""; String v1=""; .) 
+    =  
+        Expr <out v1>               (. res = v1 + " "; .)
+        {
+        "," Expr <out v1>               (. res =  res + v1 + " "; .)
+        }
+         ":"                        (. res = res + t.val;.) 
+        "inteiro"                   (. res = res + t.val;.)        
     .                  
     //min = v[i]; minj = i;
     ComAtribuicao <out String res>   (. res = "";  String v1=""; .)
     = ident                          (. res = res + " "+ toBlackBold(t.val);.)
-    "="                              (. res = res + t.val;.)
-    Expr <out v1>                    (. res = res + v1; .)
-    ";"                              (. res = res + t.val;.)
+    "=" Expr <out v1>                (. res = res + v1; .)
     .
 
     Condicao <out String res>               (. res = " ";  String v1=" ";  String op=" "; String v12=" "; String v2=" ";.)
-    =   se Expr  <out v1>                   (. res =  " " + toBlackBold(" " + v1 + " "); .)
+    =   se                                  (. res =  t.val + " ";.)
+        Expr  <out v1>                      (. res = " " + v1; .)
         ( maior | menor |
           menorIgual | maiorIgual | 
           diferente | resto ) Expr<out v12> (. res = res + " " + v12 + " " ; .)      
@@ -183,6 +184,20 @@ PRODUCTIONS
         [ ( senao  Instrucao <out v2>       (. res = res + ident(v2,40); .)
            ) ]  
     .
+    
+    Escreva <out String res>        (. res = "";String v1=""; String v2="";.)
+    = escreva                       (. res = res + t.val;.)
+    "("                             (. res = res + t.val;.)
+    ( 
+        Expr  <out v1>                (. res = res + v1;.)  
+        [","                          (. res = res + t.val;.)
+        strConst                      (. res = res + t.val;.)
+        ]          
+        | strConst                    (. res = res + t.val;.)
+    )
+    ");"                              (. res = res + t.val;.)  
+    .
+
 /*
     OpRelacional <out String res>   (. res = ""; .)
     =    "<"                        (. res = res + t.val;.)
@@ -207,12 +222,14 @@ PRODUCTIONS
        )
     .
     
-    Expr <out String res>            (. res = "";  String v1=""; String v2=""; .)
+    Expr <out String res>            (. res = "";  String v1=""; String v2="";.)
     = ["-"]                          (. res = res + t.val;.)
     Termo <out v1>                   (. res = res + v1; .)             
         {                       
-            ( "+" Termo  <out v2>    (. res = res + v2; .)          
-            | "-" Termo  <out v2>    (. res = res + v2; .)  
+            ( "+"                (. res = res + t.val; .) 
+              Termo  <out v2>    (. res = res + v2; .)          
+            | "-"                (. res = res + t.val; .) 
+              Termo  <out v2>    (. res = res + v2; .)  
             )
         } 
     .
@@ -220,8 +237,10 @@ PRODUCTIONS
     Termo <out String res>        (. res = "";  String v1="";  String v2="";.)
     = Fator <out v1>              (. res = res + v1; .)               
     { 
-        ( "*"  Fator <out v2>     (. res = res + v2; .)  
-        | "/" Fator  <out v2>     (. res = res + v2; .)  
+        ( "*"                    (. res = res + t.val; .) 
+         Fator <out v2>          (. res = res + v2; .)  
+        | "/"                    (. res = res + t.val; .) 
+         Fator  <out v2>         (. res = res + v2; .)  
         ) 
     } .
 

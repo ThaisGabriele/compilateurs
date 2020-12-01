@@ -2,7 +2,9 @@
 comparacao de metodos de ordenacao, Marco, 2014
 */
 
+algoritmo ComparacaoDeAlgoritmosOrdenacao
 
+constante TAM = 10;
 
 procedimento imprime(v: inteiro[])
 inicio
