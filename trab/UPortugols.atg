@@ -7,7 +7,7 @@ COMPILER UPortugol
 /* Métodos para formatação */
 
 String beginDocument (String s) {
-    return "<html style='font: 18px Helvetica sans-serif><body>" + s + "</body></html>";
+    return "<html><head><style>body {font: 18px Verdana; color: #DDDDDD;background-color:#101010;}</style></head><body>" + s + "</body></html>";
 } 
 
 String ident(String s, int margin) {
@@ -15,11 +15,11 @@ String ident(String s, int margin) {
 }
 
 String toBlueBold(String s) { 
-    return "</span><br/><span style='color: #0000ff;'><strong>"+ s + "</strong></span>";    
+    return "<span style='color: #3366FF;'><strong>"+ s + "</strong></span>";    
 }
  
 String toRedBold(String s) { 
-    return  "<span style='color: #ff0000;'><strong>" + s + "</strong></span>";    
+    return  "<span style='color: #FF3344;'><strong>" + s + "</strong></span>";    
 }
 
 String toBlackBold(String s) { 
@@ -115,15 +115,15 @@ PRODUCTIONS
         [":"                                  (. res = res +  t.val; .)
         Tipo <out t1 >                        (. res = res + t1; .) 
         ]
-        inicio                                (. res = res + toBlackBold(ident(t.val,20)); .)
+        inicio                                (. res = res + toBlueBold(ident(t.val,20)); .)
         {
          Instrucao  <out v2>                  (. res = res +  ident(v2,40) ; .)  
         }
-        fim                                   (. res = res + toRedBold(ident(t.val,20)); .)
+        fim                                   (. res = res + toBlueBold(ident(t.val,20)); .)
       .
 
     Tipo <out String res>           (. res = ""; .) 
-    = "inteiro"                     (. res = res + " " + toBlackBold(t.val); .)
+    = "inteiro"                     (. res = res + " " + toRedBold(t.val); .)
     .
     
     Parametros <out String res>     (. res = ""; .)
@@ -140,12 +140,12 @@ PRODUCTIONS
     = DeclVar <out v1>               (. res = res + v1; .) 
    //   | ChamaProc  <out v2>          (. res = res + v2; .) 
       | Condicao  <out v3>            (. res = res + v3; .) 
-            "fimse;"                  (. res = res + toBlackBold(ident(t.val,20)); .)  
+            "fimse;"                  (. res = res + toBlueBold(ident(t.val,20)); .)  
       | Retorno   <out v4>           (. res = res + v4; .)         
       
       | Escreva   <out v5>            (. res = res + v5; .) 
       | Para  <out v6>               (. res = res + v6; .) 
-            "fimpara;"               (. res = res + toBlackBold(ident(t.val,20)); .)  
+            "fimpara;"               (. res = res + toBlueBold(ident(t.val,20)); .)  
             
     .
 
