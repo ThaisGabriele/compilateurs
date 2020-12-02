@@ -6,29 +6,20 @@ COMPILER UPortugol
 
 /* Métodos para formatação */
 
-//String beginDocument (String s) {
- //   return "<html style='font: 18px Helvetica sans-serif><body>" + s + "</body></html>";
-//} 
+String beginDocument (String s) {
+    return "<html><head><style>body {font: 18px Verdana; color: #DDDDDD;background-color:#101010;}</style></head><body>" + s + "</body></html>";
+} 
 
 String ident(String s, int margin) {
     return "<div style='margin-left:" + margin +"px'>" + s + "</div>";
 }
 
 String toBlueBold(String s) { 
-      //  String[] valorComSplit = s.split(" ");
-
-      //       for(String i : valorComSplit){
-        //            if (i == "se")
-                        return "</span><br/><span style='color: #0000ff;'><strong>"+ s + "</strong></span>"; 
-          //   }
-
-        
-  //  }
-  //  return s;
+    return "<span style='color: #3366FF;'><strong>"+ s + "</strong></span>";    
 }
  
 String toRedBold(String s) { 
-    return  "<span style='color: #ff0000;'><strong>" + s + "</strong></span>";    
+    return  "<span style='color: #FF3344;'><strong>" + s + "</strong></span>";    
 }
 
 String toBlackBold(String s) { 
@@ -48,7 +39,6 @@ void appendFile(String saidaFormatada) {
         String str = saidaFormatada;
         BufferedWriter writer = new BufferedWriter(new FileWriter("index.html", true));
         writer.append(str);
-    
         writer.close();
         
     } catch (IOException e) {
@@ -62,7 +52,7 @@ CHARACTERS
     digito = '0'..'9'.
     linhaComChar = ANY - '\r' - '\n'.
     qualquerCharMenosAspas = linhaComChar - '\"'.
-//    letraConstante = 'A'..'Z'
+
  
 TOKENS
     ident = letra { letra  | digito }.
@@ -121,13 +111,13 @@ PRODUCTIONS
     = DeclProc <out res>       (. saidaFormatada = saidaFormatada + res;  .)
     { 
         Instrucao <out res>    (. saidaFormatada = saidaFormatada + res; .)
-    }                          (. appendFile(saidaFormatada); .)
+    }                          (. appendFile(beginDocument(saidaFormatada)); .)
     .                           
     
     /* DeclProc = "procedimento" ident "(" {Parametros} ")" [":" Tipo ] "inicio" {Instrucao} "fim". */
-    DeclProc<out String res>                  (. String v1, v2, t1 = ""; .)
+    DeclProc<out String res>                  (. String v1, v2, t1, i = ""; .)
     =  procedimento                           (. res = toBlueBold(t.val); .)   
-       ident                                  (. res = res + " " + toBlackBold(t.val); .)      
+       ident                                 (. res = res + " " + t.val; .)      
        "("                                    (. res = res + t.val; .) 
         Parametros  <out v1 >                 (. res = res + v1; .) 
         ")"                                   (. res = res + t.val; .)  
@@ -152,35 +142,46 @@ PRODUCTIONS
         ":"                          (. res = res + " " + t.val; .)
         "inteiro"                    (. res = res + toRedBold(t.val); .)
         [("," | "[]")]               (. res = res + t.val; .) 
+        [","]                        (. res = res + t.val; .)  
     }   
     . 
     /* Instrucao = DeclVar | Condicao | Retorno | Escreva | Leia | Repeticao */
-    Instrucao <out String res>       (.res = "";  String v1, v2,v3,v4,v5,v6,v7 = "";  .)
+    Instrucao <out String res>       (.res = "";  String v1, v2,v3,v4,v5,v6,v7,v8 = "";  .)
     = DeclVar <out v1>               (. res = res + v1; .) 
-   //   | ChamaProc  <out v2>          (. res = res + v2; .) 
-      | Condicao  <out v3>            (. res = res + v3; .) 
-            "fimse;"                  (. res = res + ident(t.val,20); .)  
+      | Condicao  <out v3>           (. res = res + v3; .) 
+            "fimse;"                 (. res = res + toBlueBold(ident(t.val,20)); .)  
       | Retorno   <out v4>           (. res = res + v4; .)         
-      
+      ";"                            (. res = res + t.val;.)
       | Escreva   <out v5>           (. res = res + v5; .) 
+       // ");"                         (. res = res + t.val;.)  
       | Para  <out v6>               (. res = res + v6; .) 
-            "fimpara;"               (. res = res + toBlueBold(ident(t.val,20)); .)  
+        //    "fimpara;"               (. res = res + toBlueBold(ident(t.val,20)); .)  
      | Enquanto  <out v7>            (. res = res + v7; .) 
-            "fimenquanto;"           (. res = res + toBlueBold(ident(t.val,20)); .)  
+       //     "fimenquanto;"           (. res = res + toBlueBold(ident(t.val,20));.)  
+      | Leia  <out v8>            (. res = res + v8; .) 
+   //   ";"                            (. res = res + t.val;.)
             
     .
 
+    Leia <out String res>          (.  res = ""; .)
+    = leia                       (. res = t.val;.)
+    "("                 (. res = res + t.val;.)
+    ident               (. res = res + t.val;.)
+    ");"                (. res = res + t.val;.)
+    .
+ 
     Retorno <out String res>        (.res = "";  String v1=""; .)
-    = retorne                       (. res = res + toBlackBold(ident(t.val,20)); .) 
+    = retorne                    //   (. res = res + toBlueBold(ident(t.val,20)); .) 
      Expr  <out v1>                 (. res = res + v1; .) 
-     ";"                            (. res = res + t.val;.) 
+     //";"                            (. res = res + t.val;.) 
     .   
 
     DeclVar  <out String res>        (. res = ""; String v1, v2 = ""; .)           
-    = ComAtribuicao  <out v1>      
-            ";"                      (. res = res + v1; .)
+    = ComAtribuicao  <out v1>        (. res = res + v1 ; .)
+          [";"]                      (. res = res + t.val; .)
     | 
-    variavel SemAtribuicao <out v2>  (. res = res + " " + v2;.)
+        variavel                          (. res = toBlueBold(t.val);.)  
+        SemAtribuicao <out v2>            (. res = res + " " + v2.split("",9)[8];.)
     .
     
     // variavel j, min, minj: inteiro;  variavel tmp: inteiro;
@@ -197,16 +198,22 @@ PRODUCTIONS
     //min = v[i]; minj = i;
     ComAtribuicao <out String res>   (. res = "";  String v1,v2=""; .)
     = 
+    {
         Expr <out v1>                (. res = res + v1;.)
-    "=" Expr <out v2>                (. res = res + v2; .)
+    }
+        "="                       //  (. res = res + t.val;.)
+    {
+        Expr <out v2>                (. res = res + v2; .)    
+    }        
+ //   ";"                              (. res = res + t.val;.)   
     .
 
-    Condicao <out String res>               (. res="";String v1, v2,v3=" ";.)
-    =   [ se ]                               //  (. res = toBlueBold(t.val);.)
-        Expr  <out v1>                      (. res = res + toBlueBold(v1); .)
+    Condicao <out String res>               (. res="";String v1, v2,v3,i=" ";.)
+    =   se                                  (. res = toBlueBold(t.val) ;.)
+        Expr  <out v1>                      (. res = res + " " + v1.split("se")[1]; .)
         ( maior | menor |
           menorIgual | maiorIgual | 
-          diferente | resto |igual)          // (. res = res + t.val;.)
+          diferente | resto |igual)         
         Expr <out v3>                       (. res = res + v3 + " " ; .)      
         [
         entao                               (. res = res + toBlueBold(t.val); .)
@@ -217,7 +224,7 @@ PRODUCTIONS
     .
     
     Escreva <out String res>        (. res = "";String v1,v2="";.)
-    = escreva                       (. res = res + t.val;.)
+    = escreva                       (. res = res + toBlueBold(t.val);.)
     "("                             (. res = res + t.val;.)
     ( 
         Expr  <out v1>                (. res = res + v1;.)  
@@ -226,26 +233,35 @@ PRODUCTIONS
         ]          
         | strConst                    (. res = res + t.val;.)
     )
-    ");"                              (. res = res + t.val;.)  
+    ");"                              (. res = res + t.val;.)
     .
 
     Para <out String res>       (. res = "";String v1,v2,v3="";.)  
-    = para                     // (. res = res + toBlackBold((t.val));.)
-    ComAtribuicao <out v1>      (. System.out.println(res); res = res + toBlackBold(v1);.) 
-    ate                       //  (. res = res + t.val;.)
-    Expr  <out v2>              (. res = res + v2 + " ";.) 
-    faca                        (. res = res + t.val;.)
+    = para                      (. res = toBlueBold(t.val);.)
+    ComAtribuicao <out v1>      (. res = res + " " + v1.split("",5)[4] + " ";.) 
+    ate                         (. res = res + toBlueBold(t.val) + " ";.)
+    ["("]                       (. res = res + t.val; .)  
+    Expr  <out v2>              (. res = res + v2.split("",4)[3] + " ";.) 
+    [")"]                       (. res = res + t.val; .)  
+    faca                        (. res = res + toBlueBold(t.val);.)
+    {
     Instrucao <out v3>          (. res = res + ident(v3,20);.) 
+    }
+    "fimpara;"                  (. res = res + t.val; .)  
     .
 
     Enquanto <out String res>       (. res = ""; boolean check=false; String v1,v2,v3="";.)  
-    = enquanto                      (. res = res + toBlueBold((t.val));.)
-  //  ident                          (. if (checkProc(t.val) == true) 
-  //                                        res = res + t.val;            .)
-   // Instrucao  <out v3>            (. res = res + v3;.) 
-    Condicao <out v1>              (. res = res + toBlackBold(v1);.) 
-    faca                           (. res = res + t.val;.)
-    Instrucao  <out v2>            (. res = res + ident(v2,20);.) 
+    = enquanto                      (. res = toBlueBold(t.val);.)
+   Expr  <out v1>                   (. res = res + " " + v1.split("",9)[8] + " "; .)
+        ( maior | menor |
+          menorIgual | maiorIgual | 
+          diferente | resto |igual)          // (. res = res + t.val;.)
+        Expr <out v2>              (. res = res + v2 + " " ; .)      
+    faca                           (. res = res + toBlueBold(t.val);.)
+    {
+        Instrucao  <out v3>            (. res = res + ident(v3,20);.) 
+    }
+    "fimenquanto;"                 (. res = res + t.val; .)  
     .
     //v = novo inteiro[MAX];
     //v = novo inteiro {1, 2, 3, 4, 5};  
@@ -294,10 +310,7 @@ PRODUCTIONS
     ] 
     | numero                       (. res = res + toBlackBold(t.val); .)
     | TamanhoVet  <out v2>         (. res = res + v2; .)
-  //  | ChamaProcedimento  <out v2>  (. res = res + v2; .)
-   // |  Expr   <out v1>            (. res = res + v1; .)  
-  //  |  FatorVetor <out v2>        (. res = res + v2; .) 
-  //  | "[" ident "]"               (. res = res + t.val; .) 
+
     .
     //jOk (j, aux, v)
     ChamaProcedimento  <out String res>      (. res = ""; String v1=""; String v2 = ""; .)
@@ -346,29 +359,4 @@ END UPortugol.
 
 
      
-  /*  UPortugol = { Bloco }.
-    Bloco = DeclProc { Instrucao } .
-    DeclProc = "procedimento" ident "(" {Parametros} ")" [":" Tipo ] "inicio" {Instrucao} "fim".
-    Tipo = "inteiro".
-    Instrucao = DeclVar |
-                ChamaProc | Condicao "fimse;"  | Retorno ";" | Escreva .
-    Parametros =  ident ":" "inteiro" [ "[]" ][","]. 
-    DeclVar = ComAtribuicao ";" | SemAtribuicao ";" .
-    SemAtribuicao = "variavel" Expr  [(":" |",")] ["inteiro"] {Expr  [(":" |",")] [Tipo]}. 
-    ComAtribuicao = ident "=" Expr .
-    ChamaProc = Designator ParamsDeclarados ";".
-    ParamsDeclarados  = "(" { ident [ Expr ] [ ","] } ")".
-    ParamsPassados = "(" [ Expr {"," Expr}] ")".
-    Condicao = "se" Expr OpRelacional Expr "entao" Instrucao  ["senao" Instrucao].
-    OpRelacional = "<" | ">" | ">=" | "<=" | "!=".
-    Designator = ident "(" Expr ")".
-    Expr = ["-"] Termo { ( "+" Termo | "-" Termo ) } .
-    Termo = Fator { ( "*" Fator | "/" Fator ) } .
-    Fator =  ident ["[" Expr "]"] | numero | "(" Expr ")" | "abs" "(" Expr ")" .
-    FatorVetor =  "novo" ident ("[" Expr "]" | Inicializ).
-    Inicializ = "{" { numero } "}".
-   
-    Retorno = "retorne" [Expr] .
-    Escreva = "escreva" "(" [Expr] [strConst] [Expr] {  [ Expr ] [strConst] "," [strConst]  Expr }  ");". *
-    */
-
+ 

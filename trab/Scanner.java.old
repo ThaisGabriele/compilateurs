@@ -293,7 +293,7 @@ public class Scanner {
 		start.set(44, 17); 
 		start.set(91, 33); 
 		start.set(102, 34); 
-		start.set(59, 22); 
+		start.set(59, 20); 
 		start.set(93, 24); 
 		start.set(43, 25); 
 		start.set(42, 26); 
@@ -522,7 +522,7 @@ public class Scanner {
 				case 21:
 					{t.kind = 40; break loop;}
 				case 22:
-					{t.kind = 41; break loop;}
+					{t.kind = 42; break loop;}
 				case 23:
 					{t.kind = 43; break loop;}
 				case 24:
@@ -542,12 +542,12 @@ public class Scanner {
 					if (ch >= '0' && ch <= '9') {AddCh(); state = 2; break;}
 					else {t.kind = 46; break loop;}
 				case 31:
-					recEnd = pos; recKind = 42;
+					recEnd = pos; recKind = 41;
 					if (ch == '=') {AddCh(); state = 10; break;}
-					else {t.kind = 42; break loop;}
+					else {t.kind = 41; break loop;}
 				case 32:
 					recEnd = pos; recKind = 33;
-					if (ch == ';') {AddCh(); state = 23; break;}
+					if (ch == ';') {AddCh(); state = 21; break;}
 					else {t.kind = 33; break loop;}
 				case 33:
 					recEnd = pos; recKind = 44;
@@ -613,7 +613,7 @@ public class Scanner {
 				case 45:
 					recEnd = pos; recKind = 1;
 					if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z') {AddCh(); state = 1; break;}
-					else if (ch == ';') {AddCh(); state = 20; break;}
+					else if (ch == ';') {AddCh(); state = 22; break;}
 					else {t.kind = 1; t.val = new String(tval, 0, tlen); CheckLiteral(); return t;}
 				case 46:
 					recEnd = pos; recKind = 1;
@@ -638,7 +638,7 @@ public class Scanner {
 				case 50:
 					recEnd = pos; recKind = 1;
 					if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z') {AddCh(); state = 1; break;}
-					else if (ch == ';') {AddCh(); state = 21; break;}
+					else if (ch == ';') {AddCh(); state = 23; break;}
 					else {t.kind = 1; t.val = new String(tval, 0, tlen); CheckLiteral(); return t;}
 
 			}

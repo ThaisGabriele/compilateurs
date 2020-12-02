@@ -7,8 +7,9 @@ inicio
     fim 
 procedimento jOk(j: inteiro , aux: inteiro, v: inteiro[]): inteiro
 inicio
+    leia(var);
     variavel i, j, custo, aux: inteiro;
-    escreva(v[i], " ");
+    escreva("Algoritmo de insecao");
     custo = 0;
     para i=1 ate tamanho( v ) - 1 faca
         aux = v[i]; j = i;
