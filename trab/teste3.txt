@@ -1,3 +1,8 @@
+/*
+comparacao de metodos de ordenacao, Marco, 2014
+*/
+algoritmo ComparacaoDeAlgoritmosOrdenacao
+constante TAM = 10;
 procedimento imprime(v: inteiro[])
 inicio
 variavel i: inteiro;
@@ -44,8 +49,7 @@ min = v[i];
 minj = i;
 para j = i + 1 ate f - 1 faca
 se v[j] < min entao
-min = v[j];
-minj = j;
+min = v[j];minj = j;
 fimse;
 fimpara;
 retorne minj;
@@ -91,8 +95,8 @@ meio: inteiro, dir: inteiro) : inteiro
 inicio
 se esq <= fimEsq entao se meio <= dir entao retorne 1; fimse; fimse;
 retorne 0;
-fimprocedimento merge(v: inteiro[], tmp: inteiro[], esq: inteiro,
-meio: inteiro, dir: inteiro): inteiro
+fim
+procedimento merge(v: inteiro[], tmp: inteiro[], esq: inteiro,meio: inteiro, dir: inteiro): inteiro
 inicio
 variavel i, fimEsq, tam, k, custo: inteiro;
 custo = 0;

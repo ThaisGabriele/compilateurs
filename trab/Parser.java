@@ -74,6 +74,10 @@ String toRedBold(String s) {
 String toBlackBold(String s) { 
     return  "<strong>" + s +"</strong>";
 }
+
+String newLine (String s) {
+    return "<p>" + s + "</p>";
+}
 /* MÃ©todo que checa se a funÃ§Ã£o chamada foi declarada em algum momento no escopo*/ 
 boolean checkProc(String s){
     String proc = "jOk";
@@ -158,13 +162,23 @@ void appendFile(String saidaFormatada) {
 	
 	void UPortugol() {
 		Bloco();
-		while (la.kind == 15) {
+		while (la.kind == 12 || la.kind == 14 || la.kind == 15) {
 			Bloco();
 		}
 	}
 
 	void Bloco() {
 		String res; String saidaFormatada  = "";
+		if (la.kind == 14) {
+			Get();
+			saidaFormatada = toBlueBold(t.val);
+			Expect(1);
+		}
+		saidaFormatada = newLine(saidaFormatada + " " + t.val);
+		while (la.kind == 12) {
+			res = Constante();
+			saidaFormatada = saidaFormatada + res; 
+		}
 		res = DeclProc();
 		saidaFormatada = saidaFormatada + res;  
 		while (StartOf(1)) {
@@ -172,6 +186,22 @@ void appendFile(String saidaFormatada) {
 			saidaFormatada = saidaFormatada + res; 
 		}
 		appendFile(beginDocument(saidaFormatada)); 
+	}
+
+	String  Constante() {
+		String  res;
+		res = ""; 
+		Expect(12);
+		res = "" + toBlueBold(t.val); 
+		Expect(1);
+		res = res + " " + t.val; 
+		Expect(44);
+		res = res + " " + t.val; 
+		Expect(2);
+		res = res + " " +t.val; 
+		Expect(42);
+		res = newLine(res + t.val); 
+		return res;
 	}
 
 	String  DeclProc() {
@@ -207,53 +237,38 @@ void appendFile(String saidaFormatada) {
 	String  Instrucao() {
 		String  res;
 		res = "";  String v1, v2,v3,v4,v5,v6,v7,v8,v9 = "";  
-		switch (la.kind) {
-		case 1: case 2: case 6: case 44: case 49: case 55: {
+		if (StartOf(2)) {
 			v1 = DeclVar();
 			res = res + v1; 
-			break;
-		}
-		case 16: {
+		} else if (la.kind == 1) {
+			v2 = ChamaProcedimento();
+			res = res + v2; 
+		} else if (la.kind == 16) {
 			v3 = Condicao();
 			res = res + v3; 
 			Expect(41);
 			res = res + toBlueBold(ident(t.val,20)); 
-			break;
-		}
-		case 11: {
+		} else if (la.kind == 11) {
 			v4 = Retorno();
 			res = res + v4; 
 			Expect(42);
 			res = res + t.val;
-			break;
-		}
-		case 10: {
+		} else if (la.kind == 10) {
 			v5 = Escreva();
 			res = res + v5; 
-			break;
-		}
-		case 20: {
+		} else if (la.kind == 20) {
 			v6 = Para();
 			res = res + v6; 
-			break;
-		}
-		case 7: {
+		} else if (la.kind == 7) {
 			v7 = Enquanto();
 			res = res + v7; 
-			break;
-		}
-		case 9: {
+		} else if (la.kind == 9) {
 			v8 = Leia();
 			res = res + v8; 
-			break;
-		}
-		case 25: {
+		} else if (la.kind == 25) {
 			v9 = Caso();
 			res = res + v9; 
-			break;
-		}
-		default: SynErr(57); break;
-		}
+		} else SynErr(57);
 		return res;
 	}
 
@@ -294,7 +309,7 @@ void appendFile(String saidaFormatada) {
 	String  DeclVar() {
 		String  res;
 		res = ""; String v1, v2 = ""; 
-		if (StartOf(2)) {
+		if (StartOf(3)) {
 			v1 = ComAtribuicao();
 			res = res + v1 ; 
 			if (la.kind == 42) {
@@ -310,9 +325,23 @@ void appendFile(String saidaFormatada) {
 		return res;
 	}
 
+	String  ChamaProcedimento() {
+		String  res;
+		res = ""; String v1=""; String v2 = ""; 
+		Expect(1);
+		res = res + t.val + " ";
+		v2 = ParamsDeclarados();
+		res = res + v2;
+		if (la.kind == 42) {
+			Get();
+		}
+		res = res + t.val;
+		return res;
+	}
+
 	String  Condicao() {
 		String  res;
-		res="";String v1, v2,v3,i=" ";
+		res="";String v1, v2,v3,v4,v5,i=" ";
 		Expect(16);
 		res = toBlueBold(t.val) ;
 		v1 = Expr();
@@ -355,10 +384,16 @@ void appendFile(String saidaFormatada) {
 			res = res + toBlueBold(t.val); 
 			v2 = Instrucao();
 			res = res + ident(v2,40); 
+			while (StartOf(1)) {
+				v4 = Instrucao();
+				res = res + ident(v4,40); 
+			}
 			if (la.kind == 17) {
 				Get();
-				v2 = Instrucao();
-				res = res + ident(v2,40); 
+				while (StartOf(1)) {
+					v5 = Instrucao();
+					res = res + ident(v5,40); 
+				}
 			}
 		}
 		return res;
@@ -380,7 +415,7 @@ void appendFile(String saidaFormatada) {
 		res = res + toBlueBold(t.val);
 		Expect(35);
 		res = res + t.val;
-		if (StartOf(3)) {
+		if (StartOf(4)) {
 			v1 = Expr();
 			res = res + v1;
 			if (la.kind == 39) {
@@ -532,12 +567,20 @@ void appendFile(String saidaFormatada) {
 	String  Expr() {
 		String  res;
 		res = "";  String v1, v2="";
-		if (la.kind == 49) {
-			Get();
+		if (la.kind == 35 || la.kind == 49) {
+			if (la.kind == 49) {
+				Get();
+			} else {
+				Get();
+			}
 		}
 		res = res + t.val;
 		v1 = Termo();
 		res = res + v1; 
+		if (la.kind == 35) {
+			Get();
+		}
+		res = res + t.val; 
 		while (la.kind == 49 || la.kind == 50) {
 			if (la.kind == 50) {
 				Get();
@@ -557,12 +600,12 @@ void appendFile(String saidaFormatada) {
 	String  ComAtribuicao() {
 		String  res;
 		res = "";  String v1,v2=""; 
-		while (StartOf(3)) {
+		while (StartOf(4)) {
 			v1 = Expr();
 			res = res + v1;
 		}
 		Expect(44);
-		while (StartOf(3)) {
+		while (StartOf(4)) {
 			v2 = Expr();
 			res = res + v2; 
 		}
@@ -602,7 +645,7 @@ void appendFile(String saidaFormatada) {
 			res = res + toBlackBold(t.val); 
 			Expect(1);
 			res = res + toBlackBold(t.val); 
-			if (StartOf(3)) {
+			if (StartOf(4)) {
 				v1 = Expr();
 				res = res + v1; 
 			} else if (la.kind == 53) {
@@ -631,6 +674,28 @@ void appendFile(String saidaFormatada) {
 		return res;
 	}
 
+	String  ParamsDeclarados() {
+		String  res;
+		res = ""; String v1="";
+		Expect(35);
+		res = res + t.val;
+		while (StartOf(4)) {
+			v1 = Expr();
+			res = res + v1; 
+			if (la.kind == 39) {
+				Get();
+			}
+			res = res + t.val;
+		}
+		if (la.kind == 36) {
+			Get();
+		} else if (la.kind == 43) {
+			Get();
+		} else SynErr(64);
+		res = res + t.val;
+		return res;
+	}
+
 	String  Termo() {
 		String  res;
 		res = "";  String v1, v2="";
@@ -654,7 +719,7 @@ void appendFile(String saidaFormatada) {
 
 	String  Fator() {
 		String  res;
-		res = "";  String v1,v2,v3=""; 
+		res = "";  String v1,v2,v3,v4=""; 
 		if (la.kind == 1) {
 			Get();
 			res = res + toBlackBold(t.val); 
@@ -672,25 +737,10 @@ void appendFile(String saidaFormatada) {
 		} else if (la.kind == 55) {
 			v2 = TamanhoVet();
 			res = res + v2; 
-		} else SynErr(64);
-		return res;
-	}
-
-	String  ParamsDeclarados() {
-		String  res;
-		res = ""; String v1="";
-		Expect(35);
-		res = res + t.val;
-		while (StartOf(3)) {
-			v1 = Expr();
-			res = res + v1; 
-			if (la.kind == 39) {
-				Get();
-			}
-			res = res + t.val;
-		}
-		Expect(36);
-		res = res + t.val;
+		} else if (la.kind == 1) {
+			v4 = ChamaProcedimento();
+			res = res + v4; 
+		} else SynErr(65);
 		return res;
 	}
 
@@ -703,24 +753,12 @@ void appendFile(String saidaFormatada) {
 		res = res + t.val; 
 		if (la.kind == 2) {
 			Get();
-		} else if (StartOf(3)) {
+		} else if (StartOf(4)) {
 			v1 = Expr();
-		} else SynErr(65);
+		} else SynErr(66);
 		res = res + v1; 
 		Expect(36);
 		res = res + t.val; 
-		return res;
-	}
-
-	String  ChamaProcedimento() {
-		String  res;
-		res = ""; String v1=""; String v2 = ""; 
-		Expect(1);
-		res = res + t.val + " ";
-		v2 = ParamsDeclarados();
-		res = res + v2;
-		Expect(42);
-		res = res + t.val;
 		return res;
 	}
 
@@ -737,9 +775,10 @@ void appendFile(String saidaFormatada) {
 
 	private static final boolean[][] set = {
 		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x},
-		{x,T,T,x, x,x,T,T, x,T,T,T, x,x,x,x, T,x,x,x, T,x,x,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,T,x,x, x,x,x,T, x,x},
-		{x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,T,x,x, x,x,x,T, x,x},
-		{x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,T,x,x, x,x,x,T, x,x}
+		{x,T,T,x, x,x,T,T, x,T,T,T, x,x,x,x, T,x,x,x, T,x,x,x, x,T,x,x, x,x,x,x, x,x,x,T, x,x,x,x, x,x,x,x, T,x,x,x, x,T,x,x, x,x,x,T, x,x},
+		{x,T,T,x, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,x, x,x,x,x, T,x,x,x, x,T,x,x, x,x,x,T, x,x},
+		{x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,x, x,x,x,x, T,x,x,x, x,T,x,x, x,x,x,T, x,x},
+		{x,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,x, x,x,x,x, x,x,x,x, x,T,x,x, x,x,x,T, x,x}
 
 	};
 } // end Parser
@@ -828,8 +867,9 @@ class Errors {
 			case 61: s = "invalid Enquanto"; break;
 			case 62: s = "invalid FatorVetor"; break;
 			case 63: s = "invalid FatorVetor"; break;
-			case 64: s = "invalid Fator"; break;
-			case 65: s = "invalid TamanhoVet"; break;
+			case 64: s = "invalid ParamsDeclarados"; break;
+			case 65: s = "invalid Fator"; break;
+			case 66: s = "invalid TamanhoVet"; break;
 			default: s = "error " + n; break;
 		}
 		printMsg(line, col, s);

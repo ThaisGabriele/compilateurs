@@ -160,6 +160,7 @@ PRODUCTIONS
     /* Instrucao = DeclVar | Condicao | Retorno | Escreva | Leia | Repeticao */
     Instrucao <out String res>       (.res = "";  String v1, v2,v3,v4,v5,v6,v7,v8,v9 = "";  .)
     = DeclVar <out v1>               (. res = res + v1; .) 
+      | ChamaProcedimento <out v2>   (. res = res + v2; .)  
       | Condicao  <out v3>           (. res = res + v3; .) 
             "fimse;"                 (. res = res + toBlueBold(ident(t.val,20)); .)  
       | Retorno   <out v4>           (. res = res + v4; .)         
@@ -245,17 +246,23 @@ PRODUCTIONS
  //   ";"                              (. res = res + t.val;.)   
     .
 
-    Condicao <out String res>               (. res="";String v1, v2,v3,i=" ";.)
+    Condicao <out String res>               (. res="";String v1, v2,v3,v4,v5,i=" ";.)
     =   se                                  (. res = toBlueBold(t.val) ;.)
         Expr  <out v1>                      (. res = res + " " + v1.split("se")[1]; .)
         ( maior | menor |
           menorIgual | maiorIgual | 
           diferente | resto |igual)         
         Expr <out v3>                       (. res = res + v3 + " " ; .)      
+
         [
         entao                               (. res = res + toBlueBold(t.val); .)
         Instrucao  <out v2>                 (. res = res + ident(v2,40); .) 
-        [ ( senao  Instrucao <out v2>       (. res = res + ident(v2,40); .)
+        
+        {Instrucao  <out v4>                 (. res = res + ident(v4,40); .) 
+        }
+        [ ( senao  
+        {Instrucao <out v5>       (. res = res + ident(v5,40); .)
+        }
            ) ] 
         ] 
     .
@@ -289,11 +296,11 @@ PRODUCTIONS
 
     Enquanto <out String res>       (. res = ""; boolean check=false; String v1,v2,v3="";.)  
     = enquanto                      (. res = toBlueBold(t.val);.)
-   Expr  <out v1>                   (. res = res + " " + v1.split("",9)[8] + " "; .)
+     Expr  <out v1>                   (. res = res + " " + v1.split("",9)[8] + " "; .)
         ( maior | menor |
           menorIgual | maiorIgual | 
           diferente | resto |igual)          // (. res = res + t.val;.)
-        Expr <out v2>              (. res = res + v2 + " " ; .)      
+     Expr <out v2>              (. res = res + v2 + " " ; .)      
     faca                           (. res = res + toBlueBold(t.val);.)
     {
         Instrucao  <out v3>            (. res = res + ident(v3,20);.) 
@@ -314,9 +321,30 @@ PRODUCTIONS
        )
     .
     
+        //jOk (j, aux, v)
+    ChamaProcedimento  <out String res>      (. res = ""; String v1=""; String v2 = ""; .)
+    = ident                                  (. res = res + t.val + " ";.) 
+    ParamsDeclarados <out v2>                (. res = res + v2;.) 
+    [";"]                                    (. res = res + t.val;.) 
+    .
+
+    ParamsDeclarados <out String res>   (. res = ""; String v1="";.)
+    = "("                               (. res = res + t.val;.) 
+        {  
+            Expr  <out v1>              (. res = res + v1; .)    
+            [","]                       (. res = res + t.val;.) 
+        } 
+        (")" | ");"  )                   (. res = res + t.val;.) 
+                           
+     
+    . 
+
     Expr <out String res>            (. res = "";  String v1, v2="";.)
-    = ["-"]                          (. res = res + t.val;.)
-    Termo <out v1>                   (. res = res + v1; .)             
+    = 
+//["("]                             (. res = res + t.val .)
+    ["-" | "("]                          (. res = res + t.val;.)
+    Termo <out v1>                   (. res = res + v1; .)    
+    ["("]                             (. res = res + t.val; .)         
         {                       
             ( "+"                    (. res = res + t.val; .)
             Termo  <out v2>          (. res = res + v2; .)          
@@ -324,6 +352,7 @@ PRODUCTIONS
             Termo  <out v2>          (. res = res + v2; .)  
             )
         } 
+    
     .
 
     Termo <out String res>        (. res = "";  String v1, v2="";.)
@@ -336,8 +365,9 @@ PRODUCTIONS
         ) 
     } .
 
-    Fator <out String res>         (. res = "";  String v1,v2,v3=""; .)
+    Fator <out String res>         (. res = "";  String v1,v2,v3,v4=""; .)
     = 
+   
     ident                          (. res = res + toBlackBold(t.val); .)
     [ 
         FatorVetor  <out v1>        (. res = res + v1; .)  
@@ -347,31 +377,11 @@ PRODUCTIONS
     ] 
     | numero                       (. res = res + toBlackBold(t.val); .)
     | TamanhoVet  <out v2>         (. res = res + v2; .)
+    | ChamaProcedimento <out v4>   (. res = res + v4; .)
 
     .
-    //jOk (j, aux, v)
-    ChamaProcedimento  <out String res>      (. res = ""; String v1=""; String v2 = ""; .)
-    = ident                                  (. res = res + t.val + " ";.) 
-    ParamsDeclarados <out v2>                (. res = res + v2;.) 
-    ";"                                      (. res = res + t.val;.) 
-    .
 
-
-
-//ParamsDeclarados  = "(" { ident [ Expr ] [ ","] } ")".
  
-    ParamsDeclarados <out String res>   (. res = ""; String v1="";.)
-    = "("                               (. res = res + t.val;.) 
-        {  
-            Expr  <out v1>              (. res = res + v1; .)    
-            [","]                       (. res = res + t.val;.) 
-        } 
-        ")"                             (. res = res + t.val;.) 
-        . 
-     
-
-
-    
     Inicializa <out String res>   (. res = ""; .)
     = "{"                         (. res = res + t.val; .) 
         { 
