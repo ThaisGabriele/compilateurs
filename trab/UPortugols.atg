@@ -65,7 +65,6 @@ TOKENS
     inicio = "inicio" .
     fim = "fim".
     variavel = "variavel".
-    caso = "caso".
     enquanto = "enquanto".
     repita = "repita" .
     leia = "leia".
@@ -87,6 +86,11 @@ TOKENS
     ate = "ate".
     faca = "faca".
     fimpara = "fimpara".
+
+    seja = "seja".
+    caso = "caso".
+    outrocaso = "outrocaso".
+    fimcaso = "fimcaso".
 
 /*  Operadores    */ 
     maior = ">".
@@ -146,7 +150,7 @@ PRODUCTIONS
     }   
     . 
     /* Instrucao = DeclVar | Condicao | Retorno | Escreva | Leia | Repeticao */
-    Instrucao <out String res>       (.res = "";  String v1, v2,v3,v4,v5,v6,v7,v8 = "";  .)
+    Instrucao <out String res>       (.res = "";  String v1, v2,v3,v4,v5,v6,v7,v8,v9 = "";  .)
     = DeclVar <out v1>               (. res = res + v1; .) 
       | Condicao  <out v3>           (. res = res + v3; .) 
             "fimse;"                 (. res = res + toBlueBold(ident(t.val,20)); .)  
@@ -160,8 +164,33 @@ PRODUCTIONS
        //     "fimenquanto;"           (. res = res + toBlueBold(ident(t.val,20));.)  
       | Leia  <out v8>            (. res = res + v8; .) 
    //   ";"                            (. res = res + t.val;.)
+      | Caso  <out v9>              (. res = res + v9; .) 
             
     .
+
+    Caso <out String res>          (.  res = ""; String v1, v2,v3, v4=""; .)
+    = caso                         (.  res = toBlueBold(t.val) + " ";.)
+    Expr <out v1>                  (.  v1 = v1.split("caso")[1];
+                                       res = res + v1;.)
+    {
+        seja                       (. res = res + toBlueBold(t.val) + " "; .)
+        Expr <out v2>              (. v2 = v2.split("seja")[1];
+                                      res = res + v2;.)
+        faca                       (. res = res + toBlueBold(t.val); .)
+        {
+            Instrucao <out v3>         (.  res = res + ident(v3,20);.)
+        }
+    }
+    [ outrocaso          (. res = res + t.val; .)
+    ":"                  (. res = res + t.val; .)
+     {
+      Instrucao  <out v4>          (. //v4 = v4.split("",11)[10];
+                                        res = res + ident(v4,20);.)
+     }
+    ]
+    fimcaso                        (. res = res + toBlueBold(t.val); .)
+    .
+
 
     Leia <out String res>          (.  res = ""; .)
     = leia                       (. res = t.val;.)

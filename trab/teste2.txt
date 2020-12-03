@@ -1,26 +1,32 @@
-/*
-comparacao de metodos de ordenacao, Marco, 2014
-*/
+procedimento jOk(j: inteiro , aux: inteiro, v: inteiro[]): inteiro
+inicio
+    leia(var);
+    variavel i, j, custo, aux: inteiro;
+    caso dia
+seja 1 faca
+escreva("Domingo: ");
+escreva ("fim de semana\n");
+seja 2 faca
+escreva ("Segunda-feira: ");
+escreva ("dia util\n");
+seja 3 faca
+escreva ("Segunda-feira: ");
+escreva ("dia util\n");
+seja 4 faca
+escreva ("Segunda-feira: ");
+escreva ("dia util\n");
+seja 5 faca
+escreva ("Segunda-feira: ");
+escreva ("dia util\n");
+seja 6 faca
+escreva ("Segunda-feira: ");
+escreva ("dia util\n");
+seja 7 faca
+escreva ("Segunda-feira: ");
+escreva ("dia util\n");
+outrocaso:
+escreva ("Segunda-feira: ");
+escreva ("dia util\n");
+fimcaso
+fim
 
-
-procedimento imprime(v: inteiro[])
-inicio
-    variavel i: inteiro;
-    para i = 0 ate tamanho(v) - 1 faca
-    escreva(v[i], " ");
-    fimpara;
-fim
-procedimento copia(v1: inteiro[], v2: inteiro[])
-inicio
-    variavel i: inteiro;
-    para i = 0 ate (tamanho(v1) - 1) faca
-    v1[i] = v2[i];
-    fimpara;
-fim
-procedimento troque(v: inteiro[], i: inteiro, j: inteiro)
-inicio
-    variavel tmp: inteiro;
-    tmp = v[i];
-    v[i] = v[j];
-    v[j] = tmp;
-fim
