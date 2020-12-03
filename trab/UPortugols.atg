@@ -25,6 +25,10 @@ String toRedBold(String s) {
 String toBlackBold(String s) { 
     return  "<strong>" + s +"</strong>";
 }
+
+String newLine (String s) {
+    return "<p>" + s + "</p>";
+}
 /* Método que checa se a função chamada foi declarada em algum momento no escopo*/ 
 boolean checkProc(String s){
     String proc = "jOk";
@@ -112,7 +116,11 @@ PRODUCTIONS
     UPortugol =  Bloco { Bloco } .     
     /* Bloco = DeclProc { Instrucao } */  
     Bloco                      (. String res; String saidaFormatada  = "";.)
-    = DeclProc <out res>       (. saidaFormatada = saidaFormatada + res;  .)
+    = [algoritmo               (. saidaFormatada = toBlueBold(t.val);.) 
+    ident]                     (. saidaFormatada = newLine(saidaFormatada + " " + t.val);.)
+    {Constante <out res>       (. saidaFormatada = saidaFormatada + res; .) 
+    }  
+    DeclProc <out res>       (. saidaFormatada = saidaFormatada + res;  .)
     { 
         Instrucao <out res>    (. saidaFormatada = saidaFormatada + res; .)
     }                          (. appendFile(beginDocument(saidaFormatada)); .)
@@ -381,7 +389,14 @@ PRODUCTIONS
         | Expr  <out v1>)           (. res = res + v1; .)           
         ")"                         (. res = res + t.val; .)
     .
-
+    
+    Constante <out String res>      (.res = ""; .)
+    = constante                     (.res = "" + toBlueBold(t.val); .)
+    ident                           (.res = res + " " + t.val; .)
+    "="                             (.res = res + " " + t.val; .)
+    numero                          (.res = res + " " +t.val; .)
+    ";"                             (.res = newLine(res + t.val); .)
+    .
 
 END UPortugol.
 
